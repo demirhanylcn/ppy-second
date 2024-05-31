@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Extended Python Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 50px;
+            text-align: center;
+        }
+        .calculator {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+        }
+        .calculator input, .calculator button {
+            padding: 10px;
+            margin: 5px 0;
+            font-size: 1.2em;
+        }
+        .result {
+            margin-top: 20px;
+            font-size: 1.5em;
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <h2>Python Calculator</h2>
+        <input type="number" id="x" placeholder="Enter first number">
+        <input type="number" id="y" placeholder="Enter second number">
+        <input type="number" id="base" placeholder="Enter base (for log)">
+        <div>
+            <button onclick="calculate('add')">Add</button>
+            <button onclick="calculate('subtract')">Subtract</button>
+            <button onclick="calculate('multiply')">Multiply</button>
+            <button onclick="calculate('divide')">Divide</button>
+            <button onclick="calculate('power')">Power</button>
+            <button onclick="calculate('modulo')">Modulo</button>
+            <button onclick="showBaseInput()">Log</button>
+            <button onclick="calculate('sqrt')">Square Root</button>
+            <button onclick="calculate('sin')">Sine</button>
+            <button onclick="calculate('cos')">Cosine</button>
+            <button onclick="calculate('tan')">Tangent</button>
+        </div>
+        <div class="result" id="result">Result: </div>
+    </div>
+    <script>
+        function showBaseInput() {
+            document.getElementById('y').style.display = 'none';
+            document.getElementById('base').style.display = 'block';
+        }
+
+        function calculate(operation) {
+            const x = parseFloat(document.getElementById('x').value);
+            const y = parseFloat(document.getElementById('y').value);
+            const base = parseFloat(document.getElementById('base').value);
+            const data = { operation, x };
+            if (!isNaN(y)) data.y = y;
+            if (!isNaN(base)) data.base = base;
+
+            fetch('/calculate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('result').innerText = `Result: ${data.result}`;
+                document.getElementById('x').value = '';
+                document.getElementById('y').value = '';
+                document.getElementById('base').value = '';
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+
+    </script>
+</body>
+</html>
