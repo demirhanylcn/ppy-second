@@ -3,84 +3,117 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Extended Python Calculator</title>
+    <title>Spell Checker</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <style>
+        /* Reset CSS */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             font-family: Arial, sans-serif;
-            margin: 50px;
+            background-color: #f8f9fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             text-align: center;
         }
-        .calculator {
-            max-width: 400px;
-            margin: 0 auto;
-            padding: 20px;
-            border: 1px solid #ccc;
-            border-radius: 10px;
+
+        h1 {
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 20px;
         }
-        .calculator input, .calculator button {
-            padding: 10px;
-            margin: 5px 0;
-            font-size: 1.2em;
+
+        input[type="file"] {
+            display: none;
         }
-        .result {
+
+        .upload-btn {
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .upload-btn:hover {
+            background-color: #0056b3;
+        }
+
+        #file-label {
+            display: block;
+            margin-top: 10px;
+            color: #666;
+        }
+
+        #file-name {
+            display: none;
+            margin-top: 10px;
+            color: #333;
+            font-weight: bold;
+        }
+
+        #submit-btn {
+            display: none;
             margin-top: 20px;
-            font-size: 1.5em;
+            background-color: #28a745;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
         }
+
+        #submit-btn:hover {
+            background-color: #218838;
+        }
+
     </style>
 </head>
 <body>
-    <div class="calculator">
-        <h2>Python Calculator</h2>
-        <input type="number" id="x" placeholder="Enter first number">
-        <input type="number" id="y" placeholder="Enter second number">
-        <input type="number" id="base" placeholder="Enter base (for log)">
-        <div>
-            <button onclick="calculate('add')">Add</button>
-            <button onclick="calculate('subtract')">Subtract</button>
-            <button onclick="calculate('multiply')">Multiply</button>
-            <button onclick="calculate('divide')">Divide</button>
-            <button onclick="calculate('power')">Power</button>
-            <button onclick="calculate('modulo')">Modulo</button>
-            <button onclick="showBaseInput()">Log</button>
-            <button onclick="calculate('sqrt')">Square Root</button>
-            <button onclick="calculate('sin')">Sine</button>
-            <button onclick="calculate('cos')">Cosine</button>
-            <button onclick="calculate('tan')">Tangent</button>
-        </div>
-        <div class="result" id="result">Result: </div>
-    </div>
+    <form action="/check_spell" method="post" enctype="multipart/form-data" id="spell-check-form">
+        <h1><i class="fas fa-spell-check" style="color: #007bff;"></i> Spell Checker</h1>
+        <label for="file" class="upload-btn"><i class="fas fa-upload"></i> Choose File</label>
+        <input type="file" id="file" name="file" onchange="updateFileName()">
+        <span id="file-label">No file chosen</span>
+        <span id="file-name"></span>
+        <input type="submit" value="Check" id="submit-btn">
+    </form>
+
     <script>
-        function showBaseInput() {
-            document.getElementById('y').style.display = 'none';
-            document.getElementById('base').style.display = 'block';
+        function updateFileName() {
+            var input = document.getElementById('file');
+            var label = document.getElementById('file-label');
+            var fileName = document.getElementById('file-name');
+            var submitBtn = document.getElementById('submit-btn');
+
+            if (input.files.length > 0) {
+                var name = input.files[0].name;
+                label.style.display = 'none';
+                fileName.innerText = 'Selected file: ' + name;
+                fileName.style.display = 'block';
+                submitBtn.style.display = 'block';
+            } else {
+                label.style.display = 'block';
+                fileName.style.display = 'none';
+                submitBtn.style.display = 'none';
+            }
         }
-
-        function calculate(operation) {
-            const x = parseFloat(document.getElementById('x').value);
-            const y = parseFloat(document.getElementById('y').value);
-            const base = parseFloat(document.getElementById('base').value);
-            const data = { operation, x };
-            if (!isNaN(y)) data.y = y;
-            if (!isNaN(base)) data.base = base;
-
-            fetch('/calculate', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data),
-            })
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('result').innerText = `Result: ${data.result}`;
-                document.getElementById('x').value = '';
-                document.getElementById('y').value = '';
-                document.getElementById('base').value = '';
-            })
-            .catch(error => console.error('Error:', error));
-        }
-
-
     </script>
 </body>
 </html>
