@@ -13,6 +13,21 @@ collection = db['spelldatabase']
 def index():
     return render_template('index.html')
 
+@app.route('/check_spell', methods=['POST'])
+def check_spell():
+    if 'file' not in request.files:
+        return "No file part"
+
+    file = request.files['file']
+
+    if file.filename == '':
+        return "No selected file"
+
+    if file:
+        text = file.read().decode('utf-8')
+        corrected_text, corrected_count = spellcheck_text(text)
+        collection.insert_one({"corrected_word_count": corrected_count})
+        return render_template('result.html', original_text=text, corrected_text=corrected_text)
 
 def spellcheck_text(text):
     words = text.split()
