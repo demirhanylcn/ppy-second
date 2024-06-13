@@ -30,5 +30,6 @@ def test_spellcheck(client, monkeypatch):
     rv = client.post('/check_spell', content_type='multipart/form-data', data=data)
     assert rv.status_code == 200
     assert b'This is a corrected text.' in rv.data
+
 if __name__ == '__main__':
     pytest.main()
